@@ -75,11 +75,12 @@ class dice:
         elif roll > 90 and roll <= 100: 
             roll = 6
         
-        return roll 
+        return roll
     
+#Player Class
+
 class player:
-    diceCount = list()
-    masteryNeeded = [720,2920,10720,39520,82720,140320,226720,334720,478720,658720,874720,1126720,1414720,1738720,2098720,2530720,3610720,4330720]
+    masteryNeeded = [720,2200,7800,28800,43200,57600,86400,108000,144000,180000,216000,252000,288000,324000,360000,432000,504000,576000,720000]
     possibleNumOfDice = [2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8]
     possibleBonus = [0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10]
 
@@ -91,30 +92,84 @@ class player:
         self.numOfDice = self.possibleNumOfDice[masteryLevel-1]
         self.bonus = self.possibleBonus[masteryLevel-1]
 
-        for i in range(self.numOfDice):
-            self.diceCount.append(dice())
-        
+    def gatherMats(self, difficulty):
 
-    def gatherWood(self, difficulty):
- 
-        #rollResult = list()
-        totalRoll = 0
-        for i in range(len(self.diceCount)):
-            #rollResult.append(self.diceCount[i].rollDice())
-            totalRoll += rollResult[i]
+        #Initilizes variables
+        #totalRoll = Combined value of dice rolled
+        #totalTicks = total # of ticks done to achieve next mastery
 
-        totalRollWithBonus = self.totalRoll + self.bonus
+        totalRoll,totalTicks = 0,0
 
-spencer = player(6,10)
-print(spencer.bonus)
+        #while the # of ticks to next mastery is >1
+        while self.masteryLeft != 0:
+            totalRoll = 0
+            for i in range(1,self.numOfDice):
+                totalRoll += dice.rollDice(self) 
+
+            totalRollWithBonus = totalRoll + self.bonus
+            if totalRollWithBonus >= difficulty:
+                self.masteryLeft -= 1
+                totalTicks += 1
+            else:
+                totalTicks += 1
+                self.masteryLeft -= 1
+
+        return totalTicks
+
+    def craftMats(self, difficulty):
+
+        #Initilizes variables
+        #totalRoll = Combined value of dice rolled
+        #totalTicks = total # of ticks done to achieve next mastery
+
+        totalRoll,totalTicks, = 0,0
+
+        #while the # of ticks to next mastery is >1
+        while self.masteryLeft != 0:
+            totalRoll = 0
+            for i in range(1,self.numOfDice):
+                totalRoll += dice.rollDice(self) 
+
+            totalRollWithBonus = totalRoll + self.bonus
+            if totalRollWithBonus >= difficulty:
+                self.masteryLeft -= 1
+                totalTicks += 1
+                gatherSucess += 1
+            else:
+                totalTicks += 1
+                self.masteryLeft -= 1
+
+        return totalTicks
+    #Calculates Time (Ticks * 5 (1 tick per 5 seconds) /60 (Seconds) /60 (Minutes))
+    def calcTime(self, totalTicks):
+        return round(float(totalTicks*5/60/60),2)
+
+        #Calculates Time (Ticks * 5 (1 tick per 5 seconds) /60 (Seconds) /60 (Minutes))
+    def calcTime(self, totalTicks):
+        return round(float(totalTicks*5/60/60),2)
 
 
-           
-
- 
 
 
+playerCurrentMastery = int(input("Input Current Mastery Level: "))
+playerCurrentNumOfTicks = int(input("How many ticks do you currently have? (Not combined, towards next mastery level) "))
+gatheringDiff = int(input("What difficulty are you grinding out? (5,10,15, etc) "))
+simulationTimes = int(input("How many times would you like to run the simulation? "))
+simulationAttempts = list()
+sumOfAttempts = 0
+exit = 0
 
-                        
+test = player(playerCurrentMastery, playerCurrentNumOfTicks)
+print(test.masteryLeft)
+
+
+for i in range(0,simulationTimes):
+    peon = player(playerCurrentMastery, playerCurrentNumOfTicks)
+    simulationAttempts.append(peon.gatherMats(gatheringDiff))
+    print("Simulation " + str(i+1) + ": " + str(simulationAttempts[i]) + " Ticks")
+    
+for i in range(len(simulationAttempts)):
+     sumOfAttempts += simulationAttempts[i]
+print("It will take around " + str(player.calcTime(None,sumOfAttempts/len(simulationAttempts))) + " hours to do this")
 
 
