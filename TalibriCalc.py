@@ -55,8 +55,6 @@ Level	Mastery Required	Total Mastery Required
 18	504000	3034720
 19	576000	3610720
 20	720000	4330720
-[720, 2920, 10720, 39520, 82720, 140320, 226720, 334720, 478720, 658720, 874720, 1126720, 1414720, 1738720, 2098720, 2530720, 3610720, 4330720]
-#thisiatest
 """
 
 import random
@@ -77,64 +75,21 @@ class dice:
         elif roll > 90 and roll <= 100: 
             roll = 6
         
-        return roll  
+        return roll 
+    
 class player:
     diceCount = list()
-    #totalRoll = 0
+    masteryNeeded = [720,2920,10720,39520,82720,140320,226720,334720,478720,658720,874720,1126720,1414720,1738720,2098720,2530720,3610720,4330720]
+    possibleNumOfDice = [2,2,3,3,3,4,4,4,5,5,5,6,6,6,7,7,7,8,8,8]
+    possibleBonus = [0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10]
+
 
     def __init__(self, masteryLevel, currentTicks):
         self.masteryLevel = masteryLevel
         self.currentTicks = currentTicks
-       
-
-        if self.masteryLevel == 1:
-            self.numOfDice = 2
-            self.bonus = 0
-        elif self.masteryLevel == 2:
-            self.numOfDice = 2
-            self.bonus = 1
-        elif self.masteryLevel == 3:
-            self.numOfDice = 3
-            self.bonus = 1
-        elif self.masteryLevel == 4:
-            self.numOfDice = 3
-            self.bonus = 2
-        elif self.masteryLevel == 5:
-            self.numOfDice = 3
-            self.bonus = 2
-        elif self.masteryLevel == 6:
-            self.numOfDice = 4
-            self.bonus = 3
-        elif self.masteryLevel == 7:
-            self.numOfDice = 4
-            self.bonus = 3
-        elif self.masteryLevel == 8:
-            self.numOfDice = 4
-            self.bonus = 4
-        elif self.masteryLevel == 9:
-            self.numOfDice = 5
-            self.bonus = 4
-        elif self.masteryLevel == 10:
-            self.numOfDice = 5
-            self.bonus = 5
-        elif self.masteryLevel == 11:
-            self.numOfDice = 5
-            self.bonus = 5
-        elif self.masteryLevel == 12:
-            self.numOfDice = 6
-            self.bonus = 6
-        elif self.masteryLevel == 13:
-            self.numOfDice = 6
-            self.bonus = 6
-        elif self.masteryLevel == 14:
-            self.numOfDice = 6
-            self.bonus = 7
-        elif self.masteryLevel == 15:
-            self.numOfDice = 7
-            self.bonus = 7
-        elif self.masteryLevel == 16:
-            self.numOfDice = 7
-            self.bonus = 8
+        self.masteryLeft = self.masteryNeeded[masteryLevel-1] - self.currentTicks
+        self.numOfDice = self.possibleNumOfDice[masteryLevel-1]
+        self.bonus = self.possibleBonus[masteryLevel-1]
 
         for i in range(self.numOfDice):
             self.diceCount.append(dice())
@@ -142,20 +97,16 @@ class player:
 
     def gatherWood(self, difficulty):
  
-        rollResult = list()
+        #rollResult = list()
         totalRoll = 0
         for i in range(len(self.diceCount)):
-            rollResult.append(self.diceCount[i].rollDice())
+            #rollResult.append(self.diceCount[i].rollDice())
             totalRoll += rollResult[i]
 
         totalRollWithBonus = self.totalRoll + self.bonus
-        #if totalRollWithBonus >= difficulty:
 
-
-
-spencer = player(5,10)
-spencer.gatherWood(5)
-print(spence)
+spencer = player(6,10)
+print(spencer.bonus)
 
 
            
