@@ -97,7 +97,7 @@ class player:
     def __init__(self, masteryLevel, currentTicks):
         self.masteryLevel = masteryLevel
         self.currentTicks = currentTicks
-        self.masteryLeft = self.masteryNeeded[masteryLevel-1] - self.currentTicks
+        self.masteryLeft = self.masteryNeeded[masteryLevel-1] - currentTicks
         self.numOfDice = self.possibleNumOfDice[masteryLevel-1]
         self.diceBonus = self.possibleDiceBonus[masteryLevel-1]
         self.gatheringDiffBonus = self.gatheringDiffBonus[masteryLevel-1]
@@ -105,7 +105,7 @@ class player:
         self.craftingItemBonus = self.craftingDiffBonus[masteryLevel-1]
         self.craftingDiffBonus = self.craftingDiffBonus[masteryLevel-1]
 
-    def gatherMats(self, difficulty):
+    def gatherMatsTillNextMastery(self, difficulty):
 
         #Initilizes variables
         #totalRoll = Combined value of dice rolled
@@ -129,31 +129,98 @@ class player:
 
         return totalGathered
 
+    def gatherMatsTillEndOfTicks(self, difficulty, amountOfTicks):
+
+        #Initilizes variables
+        #totalRoll = Combined value of dice rolled
+        #totalTicks = total # of ticks done to achieve next mastery
+        self.amountOfTicks = amountOfTicks
+        totalRoll,totalTicks,totalGathered = 0,0,0
+
+        #while the # of ticks to next mastery is >1
+        while amountOfTicks!= 0:
+            for i in range(1,self.numOfDice):
+                totalRoll += dice.rollDice(self) 
+            totalRollWithBonus = totalRoll + self.diceBonus
+            if totalRollWithBonus >= difficulty - self.gatheringDiffBonus:
+                amountOfTicks -= 1
+                totalGathered += 1 + self.gatheringItemBonus
+                totalRoll = 0
+            else:
+                amountOfTicks -= 1
+                totalRoll = 0
+
+        return totalGathered
 
     #Calculates Time (Ticks * 5 (1 tick per 5 seconds) /60 (Seconds) /60 (Minutes))
     def calcTime(self, currentMastery):
         self.masteryLeft = self.masteryNeeded[self.masteryLevel-1] - self.currentTicks
-        return round(float((self.masteryLeft*5/60/60)),2)
+        return round((self.masteryLeft*5/60/60),2)
+
+    def calcTickTime(self, amountOfTicks):
+        return round(amountOfTicks*5/60/60, 2)
 
 
-playerCurrentMastery = int(input("Input Current Mastery Level: "))
-playerCurrentNumOfTicks = int(input("How many ticks do you currently have? (Not combined, towards next mastery level) "))
-gatheringDiff = int(input("What difficulty are you grinding out? (5,10,15, etc) "))
-simulationTimes = int(input("How many times would you like to run the simulation? "))
-simulationAttempts = list()
-totalSum = 0
-totalGathered = 0
-peon = player(playerCurrentMastery, playerCurrentNumOfTicks)
 
-for i in range(0,simulationTimes):
-    peon = player(playerCurrentMastery, playerCurrentNumOfTicks)
-    simulationAttempts.append(peon.gatherMats(gatheringDiff))
-    print("Simulation " + str(i+1) + " Gathered: " + str(simulationAttempts[i]) + " Mats")
+
+menu = {}
+menu['1']="Run Simulations till for specific tick amount" 
+menu['2']="Rum Simulations till next mastery level."
+menu['3']="Exit"
+while True: 
+    simulationAttempts = list()
+    totalSum = 0
+    totalGathered = 0
+
+    options=menu.keys()
     
-for i in range(len(simulationAttempts)):
-     totalSum += simulationAttempts[i]
+    for i in options: 
+        print(i, menu[i])
+    
+    selection = input("Please Select an Option: ")
+    
+    if selection =='1': 
 
-print("It will take around " + str(peon.calcTime(playerCurrentMastery))+ " hours to do this")
-print("During this time, you will gather an average of " +str(totalSum/len(simulationAttempts)) + " Mats!")
+        playerCurrentMastery = int(input("Input Current Mastery Level: "))
+        gatheringDiff = int(input("What difficulty are you grinding out? (5,10,15, etc) "))
+        playerCurrentNumOfTicks = int(input("How many ticks do you currently have? (Not combined, towards next mastery level) "))
+        playerTicks = int(input("How many ticks would you like to simulate? "))
+        simulationTimes = int(input("How many times would you like to run the simulation? "))
+        peon = player(playerCurrentMastery, playerCurrentNumOfTicks)
+
+        for i in range(0,simulationTimes):
+            peon = player(playerCurrentMastery, playerCurrentNumOfTicks)
+            simulationAttempts.append(peon.gatherMatsTillEndOfTicks(gatheringDiff, playerTicks))
+            print("Simulation " + str(i+1) + " Gathered: " + str(simulationAttempts[i]) + " Mats")
+    
+        for i in range(len(simulationAttempts)):
+             totalSum += simulationAttempts[i]
+        print("It will you " + str(player.calcTickTime(None,playerTicks))+ " hours to do this")
+        print("During this time, you will gather an average of " +str(totalSum/len(simulationAttempts)) + " Mats!")
+        break 
+
+    elif selection == '2': 
+
+        playerCurrentMastery = int(input("Input Current Mastery Level: "))
+        playerCurrentNumOfTicks = int(input("How many ticks do you currently have? (Not combined, towards next mastery level) "))
+        gatheringDiff = int(input("What difficulty are you grinding out? (5,10,15, etc) "))
+        simulationTimes = int(input("How many times would you like to run the simulation? "))
+        peon = player(playerCurrentMastery, playerCurrentNumOfTicks)
+
+        for i in range(0,simulationTimes):
+            peon = player(playerCurrentMastery, playerCurrentNumOfTicks)
+            simulationAttempts.append(peon.gatherMatsTillNextMastery(gatheringDiff))
+            print("Simulation " + str(i+1) + " Gathered: " + str(simulationAttempts[i]) + " Mats")
+    
+        for i in range(len(simulationAttempts)):
+             totalSum += simulationAttempts[i]
+
+        print("It will you " + str(peon.calcTime(playerCurrentMastery))+ " hours to do this")
+        print("During this time, you will gather an average of " +str(totalSum/len(simulationAttempts)) + " Mats!")
+        break
+    else:
+      break
+        
+
 
 
