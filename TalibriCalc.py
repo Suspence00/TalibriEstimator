@@ -3,9 +3,6 @@
 __author__ = "Suspence/Suspence0/Suspence00"
 
 import random
-import progressBar
-import time
-
 #Sets up the Talibri weighted die of destiny
 class dice:
     def rollDice(self):
@@ -70,6 +67,15 @@ class player:
     #Simple function to get the amount of time it takes to do a whol'lotta ticks
     def calcTickTime(self, amountOfTicks):
         return round(amountOfTicks*5/60/60, 2)
+
+    def calcTimeToMastery(self, desiredMastery):
+        ticksNeeded = 0
+        while self.masteryLevel != desiredMastery - 1:
+            ticksNeeded += self.masteryNeeded[playerDesiredMastery-2]
+            desiredMastery -=1
+        ticksNeeded = ticksNeeded + self.masteryPointsLeft
+        return (ticksNeeded*5/60/60)
+            
 
     def checkGearBonus(self,gearBonus):
         if gearBonus < 100:
@@ -255,7 +261,7 @@ menu['1']="Gathering: Run Simulations till for specific tick amount"
 menu['2']="Gathering: Run Simulations till next mastery level."
 menu['3']="Crafting: Run Simulations till for specific tick amount" 
 menu['4']="Crafting: Run Simulations till next mastery level."
-menu['5']="Exit"
+menu['5']="Calculate Time From Mastery X to Mastery Y"
 loop = True
 while loop: 
     print("\n Main Menu \n")
@@ -461,8 +467,27 @@ while loop:
 
         print("It will you " + str(peon.calcTime()) + " hours to do this")
         print("During this time, you will craft an average of " +str(round(totalSum/len(simulationAttempts),2)) + " items!")
-    
-    again = int(input("Run again? 1 = Yes: "))
+    elif selection == '5':
+
+        playerCurrentMastery = int(input("\n Input Current Mastery Level: "))
+        while playerCurrentMastery < 1 or playerCurrentMastery > 20:
+            print("\n"+"Please input a valid Mastery Level (1-20)")
+            playerCurrentMastery = int(input("Input Current Mastery Level: "))
+        playerDesiredMastery = int(input("Input Desired Mastery Level: "))
+
+        while playerDesiredMastery < 1 or playerDesiredMastery > 20:
+            print("\n"+"Please input a valid Mastery Level (1-20)")
+            playerDesiredMastery = int(input("Input Current Mastery Level: "))
+
+        playerCurrentNumOfTicks = int(input("How many ticks do you currently have? (Not combined, towards next mastery level): "))
+        while playerCurrentNumOfTicks > player.masteryNeeded[playerCurrentMastery-1]:
+            print("Hmm, that doesn't compute. Please make sure your current ticks is correct: ")
+            playerCurrentNumOfTicks = int(input("How many ticks do you currently have? (Not combined, towards next mastery level): "))
+
+        peon = player(playerCurrentMastery, playerCurrentNumOfTicks)
+        print("\n It will take you "+str(round(peon.calcTimeToMastery(playerDesiredMastery),2))+" Hours or "+str(round(peon.calcTimeToMastery(playerDesiredMastery)/24,2))+" days to get there. Hang in there!")
+                          
+    again = int(input("\n"+"Run again? 1 = Yes: "))
         
     if (again != 1):
         loop=False
