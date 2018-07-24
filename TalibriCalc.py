@@ -48,9 +48,6 @@ class player:
         self.currentCraftingItemBonus = self.craftingItemBonus[masteryLevel-1]
         self.currentCraftingDiffBonus = self.craftingDiffBonus[masteryLevel-1]
 
-    def getDifficulty(self):
-        return self.currentDifficulty
-
         #Checks if it's time for a level up 
     def masteryDingCheck(self):
         if self.masteryPointsLeft == 0:
@@ -172,7 +169,7 @@ class gatheringCalc(player):
         self.masteryPointsLeft = self.masteryNeeded[self.masteryLevel-1]
         self.diceBonus = self.possibleDiceBonus[self.masteryLevel-1]
         self.timesLeveledUp += 1
-        self.setGatheringDifficulty(self.getDifficulty())
+        self.setGatheringDifficulty(self.currentDifficulty)
         self.currentGatheringDiffBonus = self.gatheringDiffBonus[self.masteryLevel-1]
         self.currentGatheringItemBonus = self.gatheringItemBonus[self.masteryLevel-1]
 
@@ -249,7 +246,7 @@ class craftingCalc(player):
         self.masteryPointsLeft = self.masteryNeeded[self.masteryLevel-1]
         self.diceBonus = self.possibleDiceBonus[self.masteryLevel-1]
         self.timesLeveledUp += 1
-        self.setCraftingDifficulty(self.getDifficulty())
+        self.setCraftingDifficulty(self.currentDifficulty)
         self.currentCraftingDiffBonus = self.craftingDiffBonus[self.masteryLevel-1]
         self.currentCraftingItemBonus = self.craftingItemBonus[self.masteryLevel-1]
 
